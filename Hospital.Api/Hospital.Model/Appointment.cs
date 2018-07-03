@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Hospital.Model.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Hospital.Model
 {
-    class Visit
+    class Appointment : ICouchDbEntity
     {
-        public int Id { get; set; }
         public string PurposeOfVisit { get; set; }
         public Patient Patient { get; set; }
         public Doctor Doctor { get; set; }

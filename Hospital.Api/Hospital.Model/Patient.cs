@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Hospital.Model.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Hospital.Model
 {
-    public class Patient
+    public class Patient : ICouchDbEntity
     {
-        public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public ICollection<string> Address { get; set; }

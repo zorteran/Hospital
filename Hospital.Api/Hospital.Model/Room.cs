@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Hospital.Model.Interfaces;
+using System.Collections.Generic;
 
 namespace Hospital.Model
 {
-    public class Room
+    public class Room : ICouchDbEntity
     {
-        public int Id { get; set; }
+
         public string Number { get; set; }
         public ICollection<Proffesion> PermittedProffesions { get; set; }
     }

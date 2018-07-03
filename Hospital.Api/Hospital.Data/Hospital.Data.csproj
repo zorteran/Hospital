@@ -8,4 +8,8 @@
     <PackageReference Include="MyCouch" Version="6.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Hospital.Model\Hospital.Model.csproj" />
+  </ItemGroup>
+
 </Project>
