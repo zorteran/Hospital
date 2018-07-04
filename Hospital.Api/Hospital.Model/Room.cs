@@ -7,6 +7,6 @@ namespace Hospital.Model
     {
 
         public string Number { get; set; }
-        public ICollection<Proffesion> PermittedProffesions { get; set; }
+        public ICollection<Profession> PermittedProffesions { get; set; }
     }
 }

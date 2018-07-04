@@ -6,7 +6,7 @@ namespace Hospital.Model.Interfaces
 {
     public class ICouchDbEntity
     {
-        string _id { get; set; }
-        string _rev { get; set; }
+        public string _id { get; set; }
+        public string _rev { get; set; }
     }
 }

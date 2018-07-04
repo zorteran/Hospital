@@ -1,43 +1,61 @@
-﻿using Hospital.Data.IRepositories;
+﻿using Hospital.Data.Factories;
+using Hospital.Data.IRepositories;
 using Hospital.Model.Interfaces;
 using MyCouch;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Hospital.Data
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : ICouchDbEntity
     {
-        public Repository()
+        private readonly ICouchConnectionFactory _couchDb;
+        public Repository(ICouchConnectionFactory couch)
         {
-            //using (var client = new MyCouchClient("http://127/0/0/1:5984", "testdb" ))
-            //{
-            //    client.
-            //}
+            _couchDb = couch;
         }
-        public void Delete(int id)
+        public async Task<bool> DeleteAsync(string id)
         {
-            throw new NotImplementedException();
-        }
-
-        public TEntity GetById(int id)
-        {
-            throw new NotImplementedException();
+            using (var store = _couchDb.GetStore())
+            {
+                return await store.DeleteAsync(id);
+            }
         }
 
-        public void Insert(TEntity entity)
+        public async Task<TEntity> GetByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            using (var store = _couchDb.GetStore())
+            {
+                return await store.GetByIdAsync<TEntity>(id);
+            }
+        }
+
+        public async Task<TEntity> InsertAsync(TEntity entity)
+        {
+            using (var store = _couchDb.GetStore())
+            {
+                return await store.StoreAsync(entity);
+            }
         }
 
         public IEnumerable<TEntity> List()
         {
             throw new NotImplementedException();
+            using (var store = _couchDb.GetStore())
+            {
+                //return store.QueryAsync<TEntity>(new Query());
+            }
         }
 
-        public void Update(TEntity entity)
+        public async Task<TEntity> UpdateAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            using (var store = _couchDb.GetStore())
+            {
+                return await store.StoreAsync(entity);
+
+            }
         }
     }
+
 }
