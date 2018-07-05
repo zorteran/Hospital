@@ -6,10 +6,11 @@ namespace Hospital.Data.IRepositories
 {
     public interface IRepository<TEntity> where TEntity : ICouchDbEntity
     {
-        IEnumerable<TEntity> List();
+        Task<IEnumerable<TEntity>> ListAsync(int? limit = null);
         Task<TEntity> GetByIdAsync(string id);
         Task<TEntity> InsertAsync(TEntity entity);
         Task<TEntity> UpdateAsync(TEntity entity);
-        Task<bool> DeleteAsync(string id);
+        Task DeleteAsync(TEntity entity);
+        
     }
 }

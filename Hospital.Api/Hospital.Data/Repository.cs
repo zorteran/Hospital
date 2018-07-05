@@ -1,9 +1,12 @@
-﻿using Hospital.Data.Factories;
+﻿using Hospital.Data.Exceptions;
+using Hospital.Data.Factories;
 using Hospital.Data.IRepositories;
 using Hospital.Model.Interfaces;
 using MyCouch;
+using MyCouch.Requests;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hospital.Data
@@ -15,45 +18,90 @@ namespace Hospital.Data
         {
             _couchDb = couch;
         }
-        public async Task<bool> DeleteAsync(string id)
+        public async Task DeleteAsync(TEntity entity)
         {
-            using (var store = _couchDb.GetStore())
+            using (var client = _couchDb.GetClient())
             {
-                return await store.DeleteAsync(id);
+                var response = await client.Entities.DeleteAsync(entity);
+                if (!response.IsSuccess)
+                {
+                    throw new CouchDbException(response.Error);
+                }
             }
         }
 
         public async Task<TEntity> GetByIdAsync(string id)
         {
-            using (var store = _couchDb.GetStore())
+            using (var client = _couchDb.GetClient())
             {
-                return await store.GetByIdAsync<TEntity>(id);
+                var response = await client.Entities.GetAsync<TEntity>(id);
+                if (response.IsSuccess)
+                {
+                    return response.Content;
+                }
+                else
+                {
+                    if (response.Error == "not_found")
+                    {
+                        return null;
+                    }
+                    throw new CouchDbException(response.Error);
+                }
             }
         }
 
         public async Task<TEntity> InsertAsync(TEntity entity)
         {
-            using (var store = _couchDb.GetStore())
+            using (var client = _couchDb.GetClient())
             {
-                return await store.StoreAsync(entity);
+                var response = await client.Entities.PostAsync(entity);
+                if (response.IsSuccess)
+                {
+                    return response.Content;
+                }
+                else
+                {
+                    throw new CouchDbException(response.Error);
+                }
             }
         }
 
-        public IEnumerable<TEntity> List()
+        public async Task<IEnumerable<TEntity>> ListAsync(int? limit = null)
         {
-            throw new NotImplementedException();
-            using (var store = _couchDb.GetStore())
+            using (var client = _couchDb.GetClient())
             {
-                //return store.QueryAsync<TEntity>(new Query());
+                var query = new QueryViewRequest("all", "list");
+                query.Key = typeof(TEntity).Name.ToLower();
+                query.Reduce = false;
+                if(limit.HasValue)
+                {
+                    query.Limit= limit.Value;
+                }
+                var response = await client.Views.QueryAsync<TEntity>(query);
+                if (response.IsSuccess)
+                {
+                    return response.Rows.Select(r => r.Value);
+                }
+                else
+                {
+                    throw new CouchDbException(response.Error);
+                }
             }
         }
-
+        
         public async Task<TEntity> UpdateAsync(TEntity entity)
         {
-            using (var store = _couchDb.GetStore())
+            using (var client = _couchDb.GetClient())
             {
-                return await store.StoreAsync(entity);
-
+                var response = await client.Entities.PutAsync(entity);
+                if (response.IsSuccess)
+                {
+                    return response.Content;
+                }
+                else
+                {
+                    throw new CouchDbException(response.Error);
+                }
             }
         }
     }

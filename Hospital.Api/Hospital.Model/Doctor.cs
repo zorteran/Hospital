@@ -16,6 +16,8 @@ namespace Hospital.Model
         }
         public Doctor(Doctor doc)
         {
+            _id = doc._id;
+            _rev = doc._rev;
             FirstName = doc.FirstName;
             LastName = doc.LastName;
             Professions = doc.Professions;

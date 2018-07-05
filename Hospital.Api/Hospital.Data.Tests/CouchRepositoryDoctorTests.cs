@@ -1,18 +1,22 @@
+using Hospital.Data.Exceptions;
 using Hospital.Data.Factories;
 using Hospital.Data.IRepositories;
 using Hospital.Model;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Hospital.Data.Tests
 {
-    public class CouchRepositoryDoctorTests
+    public class CouchRepositoryTests
     {
         private readonly IRepository<Doctor> _doctorsRepo;
-        public CouchRepositoryDoctorTests()
+        private readonly IRepository<Patient> _patientsRepo;
+        public CouchRepositoryTests()
         {
             _doctorsRepo = new Repository<Doctor>(new TestCouchConnectionFactory());
+            _patientsRepo = new Repository<Patient>(new TestCouchConnectionFactory());
         }
         [Fact]
         public async Task DoctorRepository_AddDoctorEntity_AddsDoctorEntityAsyncAndDeletesIt()
@@ -27,8 +31,7 @@ namespace Hospital.Data.Tests
             Assert.False(String.IsNullOrWhiteSpace(returnedDoc._id));
             var docFromDb = await _doctorsRepo.GetByIdAsync(returnedDoc._id);
             Assert.True(returnedDoc._rev == docFromDb._rev && returnedDoc.FirstName == docFromDb.FirstName);
-            bool result = await _doctorsRepo.DeleteAsync(returnedDoc._id);
-            Assert.True(result);
+            await _doctorsRepo.DeleteAsync(returnedDoc);
         }
 
         [Fact]
@@ -45,8 +48,7 @@ namespace Hospital.Data.Tests
 
             var returnedSameDoc = await _doctorsRepo.InsertAsync(returnedDoc);
             Assert.False(returnedDocRev == returnedSameDoc._rev);
-            bool result = await _doctorsRepo.DeleteAsync(returnedSameDoc._id);
-            Assert.True(result);
+            await _doctorsRepo.DeleteAsync(returnedSameDoc);
         }
 
         [Fact]
@@ -67,13 +69,11 @@ namespace Hospital.Data.Tests
             Assert.False(returnedDocRev == returnedSameDoc._rev);
             Assert.True(returnedSameDoc.FirstName == newName);
 
-
-            bool result = await _doctorsRepo.DeleteAsync(returnedSameDoc._id);
-            Assert.True(result);
+            await _doctorsRepo.DeleteAsync(returnedSameDoc);
         }
 
         [Fact]
-        public async Task DoctorRepository_UpdateDoctorWithPreviousRev_ShitHappens()
+        public async Task DoctorRepository_UpdateDoctorWithPreviousRev_ThrowsExceptionConflict()
         {
             string newName = "Jan";
             var newDoc = new Doctor()
@@ -91,14 +91,7 @@ namespace Hospital.Data.Tests
             var updatedDoc = await _doctorsRepo.UpdateAsync(returnedDoc);
 
             oldDoc.FirstName = newName;
-            var updatedOldDoc = await _doctorsRepo.UpdateAsync(oldDoc);
-
-            //Assert.False(returnedDocRev == returnedSameDoc._rev);
-            //Assert.True(returnedSameDoc.FirstName == newName);
-
-
-            //bool result = await _doctorsRepo.DeleteAsync(returnedSameDoc._id);
-            //Assert.True(result);
+            await Assert.ThrowsAsync<CouchDbException>(() => _doctorsRepo.UpdateAsync(oldDoc));
         }
 
         [Fact]
@@ -114,14 +107,13 @@ namespace Hospital.Data.Tests
             Assert.False(String.IsNullOrWhiteSpace(returnedDoc._id));
             var docFromDb = await _doctorsRepo.GetByIdAsync(returnedDoc._id);
             Assert.True(returnedDoc._rev == docFromDb._rev && returnedDoc.FirstName == docFromDb.FirstName);
-            bool result = await _doctorsRepo.DeleteAsync(docFromDb._id);
-            Assert.True(result);
+            await _doctorsRepo.DeleteAsync(docFromDb);
             Doctor deletedDocFromDb = await _doctorsRepo.GetByIdAsync(returnedDoc._id);
             Assert.Null(deletedDocFromDb);
         }
 
         [Fact]
-        public async Task DoctorRepository_DeleteDoctorEntityThatDoesntExists_DeletesDoctorEntityAsync()
+        public async Task DoctorRepository_DeleteDoctorEntityThatDoesntExists_ThrowsCouchDbExceptionNotFound()
         {
             var newDoc = new Doctor()
             {
@@ -133,11 +125,47 @@ namespace Hospital.Data.Tests
             Assert.False(String.IsNullOrWhiteSpace(returnedDoc._id));
             var docFromDb = await _doctorsRepo.GetByIdAsync(returnedDoc._id);
             Assert.True(returnedDoc._rev == docFromDb._rev && returnedDoc.FirstName == docFromDb.FirstName);
-            bool result = await _doctorsRepo.DeleteAsync(docFromDb._id);
-            Assert.True(result);
-            result = await _doctorsRepo.DeleteAsync(docFromDb._id);
-            Assert.False(result);
+            await _doctorsRepo.DeleteAsync(docFromDb);
+            await Assert.ThrowsAsync<CouchDbException>(() => _doctorsRepo.DeleteAsync(docFromDb));
         }
 
+        [Fact]
+        public async Task DoctorRepository_ListAllDoctors_ListsAllDoctorsAsync()
+        {
+            int length = 10;
+            var doctors = await _doctorsRepo.ListAsync();
+            var patients = await _doctorsRepo.ListAsync();
+            for (int i = 0; i < length; i++)
+            {
+                await _doctorsRepo.InsertAsync(CreateDoctor());
+                await _patientsRepo.InsertAsync(CreatePatient());
+            }
+            var doctorsAfterInsert = await _doctorsRepo.ListAsync();
+            var patientsAfterInsert = await _doctorsRepo.ListAsync();
+            Assert.True(doctors.Count() + length == doctorsAfterInsert.Count());
+            Assert.True(patients.Count() + length == patientsAfterInsert.Count());
+        }
+
+        private static Doctor CreateDoctor()
+        {
+            return new Doctor()
+            {
+                FirstName = "Karol",
+                LastName = "Wielki",
+                Professions = { "Chirurg", "Internista" }
+            };
+        }
+
+        private static Patient CreatePatient()
+        {
+            return new Patient()
+            {
+                FirstName = "Jan",
+                LastName = "Kowalski",
+                Address = { "Warszawa", "Kaliskiego 2" },
+                NfzInsurance = true,
+                NfzInsuranceValidDate = new DateTime().AddYears(1)
+            };
+        }
     }
 }
