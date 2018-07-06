@@ -7,5 +7,6 @@ namespace Hospital.Data.IRepositories
 {
     public interface IDoctorRepository : IRepository<Doctor>
     {
+
     }
 }

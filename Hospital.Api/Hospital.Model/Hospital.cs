@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Hospital.Model
 {
-    public class Hospital : ICouchDbEntity
+    public class Hospital : CouchDbBaseEntity
     {
         public string Name { get; set; }
         public ICollection<string> Address { get; set; }

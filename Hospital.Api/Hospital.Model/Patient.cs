@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Hospital.Model
 {
-    public class Patient : ICouchDbEntity
+    public class Patient : CouchDbBaseEntity
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

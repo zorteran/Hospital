@@ -1,22 +1,24 @@
 using Hospital.Data.Exceptions;
-using Hospital.Data.Factories;
 using Hospital.Data.IRepositories;
 using Hospital.Model;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Hospital.Data.DbManagers;
 using Xunit;
 
 namespace Hospital.Data.Tests
 {
     public class CouchRepositoryTests
     {
+        private const string dbUrl = "http://127.0.0.1:5984";
+        private const string DbName = "unit-tests";
         private readonly IDoctorRepository _doctorsRepo;
         private readonly IPatientRepository _patientsRepo;
         public CouchRepositoryTests()
         {
-            _doctorsRepo = new DoctorRepository(new TestCouchConnectionFactory());
-            _patientsRepo = new PatientRepository(new TestCouchConnectionFactory());
+            _doctorsRepo = new DoctorCouchDbGenericCouchDbRepository(new CouchDbManager(dbUrl, DbName));
+            _patientsRepo = new PatientCouchDbGenericCouchDbRepository(new CouchDbManager(dbUrl, DbName));
         }
         [Fact]
         public async Task DoctorRepository_AddDoctorEntity_AddsDoctorEntityAsyncAndDeletesIt()

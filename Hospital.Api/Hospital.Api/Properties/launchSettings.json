@@ -11,9 +11,9 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/values",
+      "launchUrl": "swagger",
       "environmentVariables": {
-        "HOSPITAL_NAME": "TestHospital",
+        "HOSPITAL_NAME": "MyCouchHospital",
         "COUCH_DB_URL": "http://127.0.0.1:5984",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

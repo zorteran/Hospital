@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Hospital.Model
 {
-    public class Appointment : ICouchDbEntity
+    public class Appointment : CouchDbBaseEntity
     {
         public string PurposeOfVisit { get; set; }
         public Patient Patient { get; set; }

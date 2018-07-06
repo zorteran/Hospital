@@ -1,5 +1,4 @@
 ﻿using Hospital.Data.Exceptions;
-using Hospital.Data.Factories;
 using Hospital.Data.IRepositories;
 using Hospital.Model.Interfaces;
 using MyCouch;
@@ -8,13 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hospital.Data.DbManagers;
 
 namespace Hospital.Data
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : ICouchDbEntity
+    public class GenericCouchDbRepository<TEntity> : IRepository<TEntity> where TEntity : CouchDbBaseEntity
     {
-        private readonly ICouchConnectionFactory _couchDb;
-        public Repository(ICouchConnectionFactory couch)
+        private readonly ICouchDbManager _couchDb;
+        public GenericCouchDbRepository(ICouchDbManager couch)
         {
             _couchDb = couch;
         }
@@ -73,22 +73,19 @@ namespace Hospital.Data
                 var query = new QueryViewRequest("all", "list");
                 query.Key = typeof(TEntity).Name.ToLower();
                 query.Reduce = false;
-                if(limit.HasValue)
+                if (limit.HasValue)
                 {
-                    query.Limit= limit.Value;
+                    query.Limit = limit.Value;
                 }
                 var response = await client.Views.QueryAsync<TEntity>(query);
                 if (response.IsSuccess)
                 {
                     return response.Rows.Select(r => r.Value);
                 }
-                else
-                {
-                    throw new CouchDbException(response.Error);
-                }
+                throw new CouchDbException(response.Error);
             }
         }
-        
+
         public async Task<TEntity> UpdateAsync(TEntity entity)
         {
             using (var client = _couchDb.GetClient())

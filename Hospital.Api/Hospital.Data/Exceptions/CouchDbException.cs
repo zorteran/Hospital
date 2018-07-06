@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Hospital.Data.Exceptions
 {
     [Serializable]
-    public class CouchDbException : Exception
+    public class CouchDbException : RepositoryException
     {
         public CouchDbException()
         {

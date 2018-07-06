@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Hospital.Data.IRepositories
 {
-    public interface IRepository<TEntity> where TEntity : ICouchDbEntity
+    public interface IRepository<TEntity> where TEntity : CouchDbBaseEntity
     {
         Task<IEnumerable<TEntity>> ListAsync(int? limit = null);
         Task<TEntity> GetByIdAsync(string id);

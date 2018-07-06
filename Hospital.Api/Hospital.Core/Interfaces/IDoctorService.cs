@@ -12,5 +12,6 @@ namespace Hospital.Core.Interfaces
         Task<Doctor> GetDoctor(string id);
         Task DeleteDoctor(Doctor doc);
         Task<Doctor> UpdateDoctor(Doctor doc);
+        Task<IEnumerable<Doctor>> GetAllDoctors(int? limit);
     }
 }

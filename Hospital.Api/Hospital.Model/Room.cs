@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Hospital.Model
 {
-    public class Room : ICouchDbEntity
+    public class Room : CouchDbBaseEntity
     {
 
         public string Number { get; set; }

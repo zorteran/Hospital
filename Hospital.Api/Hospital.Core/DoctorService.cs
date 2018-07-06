@@ -1,6 +1,7 @@
 ﻿using Hospital.Core.Interfaces;
 using Hospital.Model;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hospital.Data.IRepositories;
 
@@ -32,6 +33,11 @@ namespace Hospital.Core
         public Task<Doctor> UpdateDoctor(Doctor doc)
         {
             return _doctorRepository.UpdateAsync(doc);
+        }
+
+        public async Task<IEnumerable<Doctor>> GetAllDoctors(int? limit)
+        {
+            return await _doctorRepository.ListAsync(limit);
         }
     }
 }
