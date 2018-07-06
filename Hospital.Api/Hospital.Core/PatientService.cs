@@ -4,29 +4,36 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Hospital.Data.IRepositories;
 
 namespace Hospital.Core
 {
     public class PatientService : IPatientService
     {
-        public Task<Patient> AddDoctor(Patient doc)
+        private readonly IPatientRepository _patientRepository;
+
+        public PatientService(IPatientRepository patientRepository)
         {
-            throw new NotImplementedException();
+            _patientRepository = patientRepository;
+        }
+        public async Task<Patient> AddDoctor(Patient doc)
+        {
+            return await _patientRepository.InsertAsync(doc);
         }
 
-        public Task<Patient> DeleteDoctor(Patient doc)
+        public async Task DeleteDoctor(Patient doc)
         {
-            throw new NotImplementedException();
+            await _patientRepository.DeleteAsync(doc);
         }
 
         public Task<Patient> GetDoctor(string id)
         {
-            throw new NotImplementedException();
+            return _patientRepository.GetByIdAsync(id);
         }
 
         public Task<Patient> UpdateDoctor(Patient doc)
         {
-            throw new NotImplementedException();
+            return _patientRepository.UpdateAsync(doc);
         }
     }
 }

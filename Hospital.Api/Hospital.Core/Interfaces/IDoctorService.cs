@@ -10,7 +10,7 @@ namespace Hospital.Core.Interfaces
     {
         Task<Doctor> AddDoctor(Doctor doc);
         Task<Doctor> GetDoctor(string id);
-        Task<Doctor> DeleteDoctor(Doctor doc);
+        Task DeleteDoctor(Doctor doc);
         Task<Doctor> UpdateDoctor(Doctor doc);
     }
 }
