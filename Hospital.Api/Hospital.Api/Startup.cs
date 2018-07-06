@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hospital.Data;
 using Hospital.Data.Factories;
+using Hospital.Data.IRepositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +27,8 @@ namespace Hospital.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<ICouchConnectionFactory, CouchConnectionFactory>();
+            services.AddTransient<IPatientRepository, PatientRepository>();
+            services.AddTransient<IDoctorRepository, DoctorRepository>();
             services.AddMvc();
         }
 

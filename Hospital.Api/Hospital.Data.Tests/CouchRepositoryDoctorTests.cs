@@ -11,12 +11,12 @@ namespace Hospital.Data.Tests
 {
     public class CouchRepositoryTests
     {
-        private readonly IRepository<Doctor> _doctorsRepo;
-        private readonly IRepository<Patient> _patientsRepo;
+        private readonly IDoctorRepository _doctorsRepo;
+        private readonly IPatientRepository _patientsRepo;
         public CouchRepositoryTests()
         {
-            _doctorsRepo = new Repository<Doctor>(new TestCouchConnectionFactory());
-            _patientsRepo = new Repository<Patient>(new TestCouchConnectionFactory());
+            _doctorsRepo = new DoctorRepository(new TestCouchConnectionFactory());
+            _patientsRepo = new PatientRepository(new TestCouchConnectionFactory());
         }
         [Fact]
         public async Task DoctorRepository_AddDoctorEntity_AddsDoctorEntityAsyncAndDeletesIt()
