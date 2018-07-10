@@ -11,14 +11,14 @@ namespace Hospital.Data.Tests
 {
     public class CouchRepositoryTests
     {
-        private const string dbUrl = "http://127.0.0.1:5984";
+        private const string DbUrl = "http://127.0.0.1:5984";
         private const string DbName = "unit-tests";
         private readonly IDoctorRepository _doctorsRepo;
         private readonly IPatientRepository _patientsRepo;
         public CouchRepositoryTests()
         {
-            _doctorsRepo = new DoctorCouchDbGenericCouchDbRepository(new CouchDbManager(dbUrl, DbName));
-            _patientsRepo = new PatientCouchDbGenericCouchDbRepository(new CouchDbManager(dbUrl, DbName));
+            _doctorsRepo = new DoctorCouchDbGenericCouchDbRepository(new CouchDbManager(DbUrl, DbName));
+            _patientsRepo = new PatientCouchDbGenericCouchDbRepository(new CouchDbManager(DbUrl, DbName));
         }
         [Fact]
         public async Task DoctorRepository_AddDoctorEntity_AddsDoctorEntityAsyncAndDeletesIt()

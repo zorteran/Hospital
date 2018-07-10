@@ -41,10 +41,6 @@ namespace Hospital.Data
                 }
                 else
                 {
-                    if (response.Error == "not_found")
-                    {
-                        return null;
-                    }
                     throw new CouchDbException(response.Error);
                 }
             }

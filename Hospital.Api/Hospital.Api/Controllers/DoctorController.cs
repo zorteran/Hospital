@@ -52,11 +52,34 @@ namespace Hospital.Api.Controllers
 
         }
 
-        // GET: api/Doctor/5
+        /// <summary>
+        /// Returns doctor
+        /// </summary>
+        /// <param name="id">Doctor's id</param>
+        /// <returns>Doctor</returns>
         [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> Get(string id)
         {
-            return "value";
+            try
+            {
+                return Ok(await _doctorService.GetDoctor(id));
+            }
+            catch (CouchDbException e)
+            {
+                if (e.Message == "not_found")
+                {
+                    return NotFound();
+                }
+                return BadRequest();
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+
         }
 
         /// <summary>
@@ -98,16 +121,76 @@ namespace Hospital.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates Doctor
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /Doctor
+        ///     {
+        ///        "_id" : "id",
+        ///        "_rev" : "rev",
+        ///        "$doctype": "doctor",
+        ///        "firstName": "Karol",
+        ///        "lastName": "Wielki",
+        ///        "professions": [
+        ///             "Chirurg",
+        ///             "Internista"
+        ///         ]
+        ///     }
+        /// </remarks>
+        /// <param name="doc">Doctor</param>
+        /// <returns>Updated doctor</returns>
         // PUT: api/Doctor/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> Put([FromBody]Doctor doc)
         {
+            try
+            {
+                return Ok(await _doctorService.UpdateDoctor(doc));
+            }
+            catch (CouchDbException e)
+            {
+                return BadRequest();
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
         }
 
-        // DELETE: api/ApiWithActions/5
+        /// <summary>
+        /// Deletes doctor
+        /// </summary>
+        /// <param name="id">Doctor's id</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> Delete(string id)
         {
+            try
+            {
+                var doctor = await _doctorService.GetDoctor(id);
+                await _doctorService.DeleteDoctor(doctor);
+                return Ok();
+            }
+            catch (CouchDbException e)
+            {
+                if (e.Message == "not_found")
+                {
+                    return NotFound();
+                }
+                return BadRequest();
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
         }
     }
 }
