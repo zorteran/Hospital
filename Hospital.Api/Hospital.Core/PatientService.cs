@@ -16,24 +16,31 @@ namespace Hospital.Core
         {
             _patientRepository = patientRepository;
         }
-        public async Task<Patient> AddDoctor(Patient doc)
+
+
+        public async Task<Patient> AddPatient(Patient doc)
         {
             return await _patientRepository.InsertAsync(doc);
         }
 
-        public async Task DeleteDoctor(Patient doc)
-        {
-            await _patientRepository.DeleteAsync(doc);
-        }
-
-        public Task<Patient> GetDoctor(string id)
+        public Task<Patient> GetPatient(string id)
         {
             return _patientRepository.GetByIdAsync(id);
         }
 
-        public Task<Patient> UpdateDoctor(Patient doc)
+        public async Task DeletePatient(Patient doc)
         {
-            return _patientRepository.UpdateAsync(doc);
+            await _patientRepository.DeleteAsync(doc);
+        }
+
+        public async Task<Patient> UpdatePatient(Patient doc)
+        {
+            return await _patientRepository.UpdateAsync(doc);
+        }
+
+        public async Task<IEnumerable<Patient>> GetAllPatients(int? limit)
+        {
+            return await _patientRepository.ListAsync(limit);
         }
     }
 }

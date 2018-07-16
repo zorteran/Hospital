@@ -8,9 +8,10 @@ namespace Hospital.Core.Interfaces
 {
     public interface IPatientService
     {
-        Task<Patient> AddDoctor(Patient doc);
-        Task<Patient> GetDoctor(string id);
-        Task DeleteDoctor(Patient doc);
-        Task<Patient> UpdateDoctor(Patient doc);
+        Task<Patient> AddPatient(Patient doc);
+        Task<Patient> GetPatient(string id);
+        Task DeletePatient(Patient doc);
+        Task<Patient> UpdatePatient(Patient doc);
+        Task<IEnumerable<Patient>> GetAllPatients(int? limit);
     }
 }

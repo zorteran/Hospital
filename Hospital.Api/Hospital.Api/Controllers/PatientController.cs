@@ -1,33 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Hospital.Core.Interfaces;
 using Hospital.Data.Exceptions;
 using Hospital.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hospital.Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Doctor")]
-    public class DoctorController : Controller
+    [Route("api/Patient")]
+    public class PatientController : Controller
     {
-        private readonly IDoctorService _doctorService;
+        private readonly IPatientService _patientService;
 
-        public DoctorController(IDoctorService doctorService)
+        public PatientController(IPatientService patientService)
         {
-            _doctorService = doctorService;
+            _patientService = patientService;
         }
 
 
-        // GET: api/Doctor
         /// <summary>
-        /// Returns all doctors
+        /// Returns all patients
         /// </summary>
         /// <param name="limit">Optional numeric paremeter. Limits returned collection.</param>
-        /// <returns>Array of doctors</returns>
+        /// <returns>Array of patients</returns>
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
@@ -36,7 +32,7 @@ namespace Hospital.Api.Controllers
 
             try
             {
-                return Ok(await _doctorService.GetAllDoctors(limit));
+                return Ok(await _patientService.GetAllPatients(limit));
             }
             catch (CouchDbException e)
             {
@@ -53,10 +49,10 @@ namespace Hospital.Api.Controllers
         }
 
         /// <summary>
-        /// Returns doctor
+        /// Returns patient
         /// </summary>
-        /// <param name="id">Doctor's id</param>
-        /// <returns>Doctor</returns>
+        /// <param name="id">Patient's id</param>
+        /// <returns>Patient</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
@@ -65,7 +61,7 @@ namespace Hospital.Api.Controllers
         {
             try
             {
-                return Ok(await _doctorService.GetDoctor(id));
+                return Ok(await _patientService.GetPatient(id));
             }
             catch (CouchDbException e)
             {
@@ -83,32 +79,34 @@ namespace Hospital.Api.Controllers
         }
 
         /// <summary>
-        /// Adds Doctor to database
+        /// Adds Patient to database
         /// </summary>
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /Doctor
-        ///     {
-        ///        "firstName": "Karol",
-        ///        "lastName": "Wielki",
-        ///        "professions": [
-        ///             "Chirurg",
-        ///             "Internista"
-        ///         ]
-        ///     }
+        ///     POST /Patient
+        /// {
+        ///    "firstName": "Jan",
+        ///    "lastName": "Kowalski",
+        ///    "address": [
+        ///    "Warszawa",
+        ///    "Bemowo",
+        ///    "Kaliskiego 17"
+        ///        ],
+        ///    "nfzInsurance": true,
+        ///    "nfzInsuranceValidDate": "2019-07-16T08:58:07.144Z"
+        /// }
         ///
         /// </remarks>
-        /// <param name="doc">Doctor</param>
-        // POST: api/Doctor
+        /// <param name="patient">Patient</param>
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Post([FromBody]Doctor doc)
+        public async Task<IActionResult> Post([FromBody]Patient patient)
         {
             try
             {
-                return Ok(await _doctorService.AddDoctor(doc));
+                return Ok(await _patientService.AddPatient(patient));
             }
             catch (CouchDbException e)
             {
@@ -121,12 +119,12 @@ namespace Hospital.Api.Controllers
         }
 
         /// <summary>
-        /// Updates Doctor
+        /// Updates Patient
         /// </summary>
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST /Doctor
+        ///     POST /Patient
         ///     {
         ///        "_id" : "id",
         ///        "_rev" : "rev",
@@ -139,17 +137,16 @@ namespace Hospital.Api.Controllers
         ///         ]
         ///     }
         /// </remarks>
-        /// <param name="doc">Doctor</param>
-        /// <returns>Updated doctor</returns>
-        // PUT: api/Doctor/5
+        /// <param name="patient">Patient</param>
+        /// <returns>Updated patient</returns>
         [HttpPut]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Put([FromBody]Doctor doc)
+        public async Task<IActionResult> Put([FromBody]Patient patient)
         {
             try
             {
-                return Ok(await _doctorService.UpdateDoctor(doc));
+                return Ok(await _patientService.UpdatePatient(patient));
             }
             catch (CouchDbException e)
             {
@@ -162,9 +159,9 @@ namespace Hospital.Api.Controllers
         }
 
         /// <summary>
-        /// Deletes doctor
+        /// Deletes patient
         /// </summary>
-        /// <param name="id">Doctor's id</param>
+        /// <param name="id">Patients's id</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(200)]
@@ -174,8 +171,8 @@ namespace Hospital.Api.Controllers
         {
             try
             {
-                var doctor = await _doctorService.GetDoctor(id);
-                await _doctorService.DeleteDoctor(doctor);
+                var doctor = await _patientService.GetPatient(id);
+                await _patientService.DeletePatient(doctor);
                 return Ok();
             }
             catch (CouchDbException e)
